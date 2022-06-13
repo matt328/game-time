@@ -24,6 +24,7 @@ const main = async (): Promise<void> => {
   // // const token = await control.getTokenPromise();
   // // log.debug({ token });
 
+  // Comment this line out, and it exits correctly.  Uncommented the application just runs forever.
   log.debug('sendKey: ', await control.sendKeyPromise(KEYS.KEY_SOURCE));
 
   // await control.sendKeyPromise(KEYS.KEY_POWER);
