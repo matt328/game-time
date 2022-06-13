@@ -1,6 +1,6 @@
 import { Logger } from 'tslog';
 
-import Samsung from 'samsung-tv-control';
+import Samsung, { KEYS } from 'samsung-tv-control';
 
 const config = {
   debug: false, // Default: false
@@ -16,7 +16,7 @@ exports.desc = 'Control the TV';
 
 type TvArgs = { onoff: 'on' | 'off'; debug: boolean };
 
-exports.handler = async (argv: TvArgs): Promise<void> => {
+exports.handler = async (argv: TvArgs): Promise<any> => {
   const log: Logger = new Logger(!argv.debug ? { minLevel: 'info' } : {});
   const newConfig = { ...config, debug: argv.debug };
 
@@ -26,32 +26,12 @@ exports.handler = async (argv: TvArgs): Promise<void> => {
 
   switch (argv.onoff) {
     case 'on':
-      try {
-        const turnedOn = await control.turnOn();
-        log.info('Connection created');
-        if (turnedOn) {
-          try {
-            if (await control.isAvailable()) {
-              log.info('TV Connection available and ready to send commands');
-              return;
-            } else {
-              log.warn('Timed out negotiating TV Connection');
-            }
-          } catch (e) {
-            log.error('Timed out waiting for TV Connection to become available', e);
-            return;
-          }
-        } else {
-          log.warn('Failed to initialize TV Connection');
-          return;
-        }
-      } catch (e) {
-        log.error('Failed to create TV Connection', e);
-      } finally {
-        control.closeConnection();
-      }
+      await control.turnOn();
+      await control.isAvailable();
+      // const token = await control.getTokenPromise();
+      // log.debug('token: ', token);
 
-      break;
+      return control.sendKeyPromise(KEYS.KEY_HOME);
 
     case 'off':
       break;
